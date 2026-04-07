@@ -1,109 +1,166 @@
-# robots_finder
-a script for OSİNT
 
+# Robots Finder
 
-Robots Finder
+Robots Finder is a Python tool for fetching and analyzing a website’s `robots.txt` file. It extracts disallowed paths, discovers sitemap entries, probes the discovered URLs, and reports potentially interesting findings such as accessible, protected, redirected, or broken paths.
 
-A fast and efficient command-line tool designed to locate, fetch, and analyze robots.txt files from target domains to identify disallowed paths and crawl rules.
-Features
+## What it does
 
-    Scans multiple domains/URLs simultaneously.
-    Identifies hidden directories and sensitive paths listed in robots.txt.
-    Validates URL status codes.
-    Export results to text or JSON formats.
-    User-agent customization.
+- Fetches `robots.txt` from a target website
+- Parses `Disallow` rules
+- Parses `Sitemap` entries
+- Normalizes and deduplicates discovered paths
+- Builds full URLs from discovered disallowed paths
+- Probes each URL and groups results by HTTP status
+- Highlights interesting findings such as:
+  - `200` — publicly accessible
+  - `401/403` — protected but exists
+  - `301/302` — redirects
+  - `500` — server-side errors
 
-Tech Stack
+## Tech Stack
 
-    Language: Python 3.x
-    Libraries: requests, argparse, colorama
+- **Language:** Python 3
+- **Library:** `requests`
 
-Setup
-Prerequisites
+## Project Structure
 
-    Python 3.7 or higher installed.
+```bash
+robots_finder/
+├── robots_finder.py
+├── requirements.txt
+└── README.md
+````
 
-Installation
+## Requirements
 
- copy
+* Python 3.7 or higher
 
-bash
+## Installation
+
+```bash
 # Clone the repository
 git clone https://github.com/grostel018/robots_finder.git
 
-# Navigate to the project directory
+# Enter the project folder
 cd robots_finder
 
 # Install dependencies
 pip install -r requirements.txt
+```
 
-Usage
-Basic Scan
+## Usage
 
- copy
+At the moment, the script uses a hardcoded target URL inside `robots_finder.py`.
 
-bash
-python robots_finder.py -u https://example.com
+Current default target:
 
-Scan from a List of Domains
+```python
+URL = "https://github.com"
+ROBOTS_TXT = URL + "/robots.txt"
+```
 
- copy
+Run the script with:
 
-bash
-python robots_finder.py -l domains.txt
+```bash
+python robots_finder.py
+```
 
-Save Output
+## How it works
 
- copy
+### 1. Fetch `robots.txt`
 
-bash
-python robots_finder.py -u https://example.com -o results.json
+The script requests the target site's `robots.txt` file.
 
-Configuration
+### 2. Parse entries
 
-Options can be passed via command-line arguments:
+It extracts:
 
-    -u, --url: Target URL.
-    -l, --list: Path to a file containing a list of targets.
-    -o, --output: Save results to a specific file.
-    -t, --timeout: Set request timeout (default: 5s).
+* `Disallow:` paths
+* `Sitemap:` URLs
 
-API Documentation
+### 3. Clean paths
 
-If used as a module:
+It:
 
- copy
+* removes duplicates
+* ensures paths begin with `/`
+* skips wildcard entries and root `/`
 
-python
-from robots_finder import RobotsScanner
+### 4. Build URLs
 
-scanner = RobotsScanner()
-results = scanner.fetch("https://example.com")
-print(results.disallowed_paths)
+Each cleaned path is combined with the base URL.
 
-Testing
+### 5. Probe discovered URLs
 
-Run tests using pytest:
+The script sends HTTP requests and groups results into categories:
 
- copy
+* `200`
+* `301/302`
+* `401/403`
+* `404`
+* `500`
+* `other`
 
-bash
-pytest tests/
+### 6. Report findings
 
-Deployment
+It prints the most interesting categories in a readable summary.
 
-This tool is designed to run locally. Ensure you have network access to the target domains.
-Contributing
+## Example Output
 
-    Fork the repository.
-    Create a feature branch (git checkout -b feature/NewFeature).
-    Commit your changes (git commit -m 'Add NewFeature').
-    Push to the branch (git push origin feature/NewFeature).
-    Open a Pull Request.
+```bash
+[*] Fetching https://github.com/robots.txt
 
-License
+[+] Success!
 
-Distributed under the MIT License. See LICENSE for more information.
-Contact
+[*] Parsing Disallow entries...
+  [Disallow] /login
+  [Disallow] /settings
 
-Project Link: https://github.com/grostel018/robots_finder
+[*] Parsing Sitemaps...
+  [Sitemap]  https://github.com/sitemap.xml
+
+[*] Probing discovered URLs...
+  [200] https://github.com/login
+  [403] https://github.com/settings
+```
+
+## Current Limitations
+
+This version is an early script version and currently does **not** include:
+
+* command-line arguments
+* scanning from a file/list of domains
+* user-agent customization
+* text or JSON export
+* concurrent scanning
+* test suite
+
+## Future Improvements
+
+Planned improvements could include:
+
+* Add `argparse` support for CLI usage
+* Allow single URL or file input
+* Add output export to `.txt` and `.json`
+* Add custom user-agent support
+* Add concurrency for faster scans
+* Add retry/error handling improvements
+* Add automated tests
+
+## Disclaimer
+
+Use this tool only on websites you are authorized to test or analyze. Respect website policies, laws, and platform terms of service.
+
+## License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+## Author
+
+**Rostel Geni**
+GitHub: [https://github.com/grostel018/robots_finder](https://github.com/grostel018/robots_finder)
+
+```
+
+I can also turn this into a **more professional GitHub-style README** with badges, a demo section, and cleaner wording based on the features you want the repo to have next.
+```
