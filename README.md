@@ -161,6 +161,3 @@ Distributed under the MIT License. See `LICENSE` for more information.
 GitHub: [https://github.com/grostel018/robots_finder](https://github.com/grostel018/robots_finder)
 
 ```
-
-I can also turn this into a **more professional GitHub-style README** with badges, a demo section, and cleaner wording based on the features you want the repo to have next.
-```
